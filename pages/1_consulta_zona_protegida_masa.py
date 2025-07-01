@@ -10,7 +10,6 @@ import geopandas as gpd
 import pydeck as pdk
 import pandas as pd
 from shapely.geometry import mapping
-import fiona
 import matplotlib.pyplot as plt
 #import contextily as ctx
 
@@ -21,7 +20,8 @@ st.set_page_config(page_title="Consulta Zona Protegida -> Masa de agua")
 st.markdown("Consulta Zona Protegida -> Masa de agua")
 st.sidebar.header("Consulta Zona Protegida -> Masa de agua")
 #listamos todas las capas que tiene el gdb 
-lista_de_capas=fiona.listlayers(st.session_state.rutaGDB)
+lista_de_capas=list(gpd.list_layers(st.session_state.rutaGDB)["name"])
+
 #st.write(lista_de_capas)
 
 # Filtrar las zonas protegidas que empiecen por 'NE' (nivel europeo)

@@ -10,7 +10,6 @@ import geopandas as gpd
 import pydeck as pdk
 import pandas as pd
 from shapely.geometry import mapping
-import fiona
 import base64
 
 
@@ -53,7 +52,7 @@ st.session_state.rutaGDB=ruta_gdb
 #@st.cache_data
 def carga_datos(ruta):
     if ruta:
-        capas = fiona.listlayers(ruta)
+        capas = list(gpd.list_layers(ruta)["name"])
     
         if capas:
             capa_sel = st.selectbox("Selecciona una capa", capas)
