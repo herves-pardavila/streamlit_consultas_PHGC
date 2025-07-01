@@ -10,17 +10,13 @@ import geopandas as gpd
 import pydeck as pdk
 import pandas as pd
 from shapely.geometry import mapping
-from osgeo import ogr
+import fiona
 import base64
 
 
 
 # -------- FUNCIÓN PARA LISTAR CAPAS EN UNA GDB --------
-def listar_capas(gdb_path):
-    ds = ogr.Open(gdb_path)
-    if not ds:
-        return []
-    return [ds.GetLayerByIndex(i).GetName() for i in range(ds.GetLayerCount())]
+
 
 # -------- FUNCIÓN PARA CONVERTIR GEOMETRÍA A pydeck --------
 def geometria_to_pydeck(gdf):
@@ -57,7 +53,7 @@ st.session_state.rutaGDB=ruta_gdb
 #@st.cache_data
 def carga_datos(ruta):
     if ruta:
-        capas = listar_capas(ruta)
+        capas = fiona.listlayers(ruta)
     
         if capas:
             capa_sel = st.selectbox("Selecciona una capa", capas)

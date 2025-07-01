@@ -10,34 +10,18 @@ import geopandas as gpd
 import pydeck as pdk
 import pandas as pd
 from shapely.geometry import mapping
-from osgeo import ogr
+import fiona
 import matplotlib.pyplot as plt
 #import contextily as ctx
 
-def listar_capas(gdb_path):
-    # Abrimos la GDB
-    ds = ogr.Open(gdb_path)
-    if not ds:
-        print(f"No se pudo abrir la geodatabase: {gdb_path}")
-        return
 
-    
-    lista_capas = []
-    for i in range(ds.GetLayerCount()):
-        layer = ds.GetLayerByIndex(i)
-        layer_name = layer.GetName()  # Devuelve la ruta tipo "Grupo/Capa"
-        geom_type = ogr.GeometryTypeToName(layer.GetGeomType())
-        #print(f"- {layer_name} ({geom_type})")
-        lista_capas.append(layer_name)
-
-    return lista_capas
 
 
 st.set_page_config(page_title="Consulta Zona Protegida -> Masa de agua")
 st.markdown("Consulta Zona Protegida -> Masa de agua")
 st.sidebar.header("Consulta Zona Protegida -> Masa de agua")
 #listamos todas las capas que tiene el gdb 
-lista_de_capas=listar_capas(st.session_state.rutaGDB)
+lista_de_capas=fiona.listlayers(st.session_state.rutaGDB)
 #st.write(lista_de_capas)
 
 # Filtrar las zonas protegidas que empiecen por 'NE' (nivel europeo)
