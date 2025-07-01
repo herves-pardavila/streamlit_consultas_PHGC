@@ -42,11 +42,7 @@ with st.echo():
         '<img src="./static/logo_AQ.png" height="33" style="border: 5px solid orange">',
         unsafe_allow_html=True,
     )
-    
-    right_column.markdown(
-        '<img src="./app/static/logo_AQ.png" height="33" style="border: 5px solid orange">',
-        unsafe_allow_html=True,
-    )
+
     
 
 #left_column.image(r"C:\Users\dherves\Pictures\logo_AQ.png")
