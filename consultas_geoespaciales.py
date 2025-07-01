@@ -35,14 +35,8 @@ def geometria_to_pydeck(gdf):
 
 st.set_page_config(page_title="Consultas geoespacialessss")
 left_column, right_column=st.columns(2)
-
-
-
-
-    
-
-left_column.image("./static\logo_AQ.png")
-right_column.image(r"C:\Users\dherves\Pictures\logo-augas-de-galicia.png")
+left_column.image("logo_AQ.png")
+right_column.image("logo-augas-de-galicia.png")
 
 # -------- CONFIGURACIÓN DE LA PÁGINA --------
 
