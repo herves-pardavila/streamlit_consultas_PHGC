@@ -3,6 +3,4 @@ geopandas
 pydeck
 pandas
 shapely
-fiona
-gdal
 matplotlib
