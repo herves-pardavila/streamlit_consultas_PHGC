@@ -39,7 +39,7 @@ left_column, right_column=st.columns(2)
 
 with st.echo():
     left_column.markdown(
-        '<img src="./app/static/logo_AQ.jpg" height="33" style="border: 5px solid orange">',
+        '<img src="./static/logo_AQ.jpg" height="33" style="border: 5px solid orange">',
         unsafe_allow_html=True,
     )
     
