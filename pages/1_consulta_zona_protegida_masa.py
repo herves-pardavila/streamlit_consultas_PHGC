@@ -20,6 +20,7 @@ st.set_page_config(page_title="Consulta Zona Protegida -> Masa de agua")
 st.markdown("Consulta Zona Protegida -> Masa de agua")
 st.sidebar.header("Consulta Zona Protegida -> Masa de agua")
 #listamos todas las capas que tiene el gdb 
+
 lista_de_capas=list(gpd.list_layers(st.session_state.rutaGDB)["name"])
 
 #st.write(lista_de_capas)

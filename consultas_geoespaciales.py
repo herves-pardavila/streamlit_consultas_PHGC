@@ -47,8 +47,8 @@ st.sidebar.success("Seleciona tipo de consulta.")
 # -------- ENTRADA: RUTA A LA GDB --------
 
 #ruta_gdb = st.text_input("Introduce la ruta local a la carpeta .gdb")
-#st.session_state.rutaGDB=ruta_gdb
 ruta_gdb="./data/PHGC28_33_GDB_Ed00.gdb"
+st.session_state.rutaGDB=ruta_gdb
 #@st.cache_data
 def carga_datos(ruta):
    
