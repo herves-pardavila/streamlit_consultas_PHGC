@@ -4,4 +4,3 @@ pydeck
 pandas
 shapely
 matplotlib
-fiona==1.8.22
