@@ -37,16 +37,12 @@ st.set_page_config(page_title="Consultas geoespacialessss")
 left_column, right_column=st.columns(2)
 
 
-with st.echo():
-    left_column.markdown(
-        '<img src="./static/logo_AQ.png" height="33" style="border: 5px solid orange">',
-        unsafe_allow_html=True,
-    )
+
 
     
 
-#left_column.image(r"C:\Users\dherves\Pictures\logo_AQ.png")
-#right_column.image(r"C:\Users\dherves\Pictures\logo-augas-de-galicia.png")
+left_column.image("./static\logo_AQ.png")
+right_column.image(r"C:\Users\dherves\Pictures\logo-augas-de-galicia.png")
 
 # -------- CONFIGURACIÓN DE LA PÁGINA --------
 
