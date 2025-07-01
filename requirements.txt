@@ -3,6 +3,6 @@ geopandas
 pydeck
 pandas
 shapely
-osgeo
-base64
+fiona
+gdal
 matplotlib
