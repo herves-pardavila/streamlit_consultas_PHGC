@@ -1,7 +1,7 @@
 streamlit
-geopandas
+geopandas=0.14.3
 pydeck
 pandas
 shapely
 matplotlib
-fiona==1.9.5
+fiona==1.8.22
