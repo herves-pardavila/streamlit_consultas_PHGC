@@ -14,7 +14,10 @@ import matplotlib.pyplot as plt
 #import contextily as ctx
 
 
-
+from mis_funciones import carga_datos
+from mis_funciones import geometria_to_pydeck
+from mis_funciones import mapa_pydeck
+from mis_funciones import cambiar_crs
 
 st.set_page_config(page_title="Consulta Zona Protegida -> Masa de agua")
 st.markdown("Consulta Zona Protegida -> Masa de agua")
@@ -38,14 +41,14 @@ zonas_protegidas.remove("NI_ReservaMarinaInt")
 
 
 # Filtrar las zonas  'MasasAuga'
-masas_agua = [c for c in lista_de_capas if c.startswith("MasasAgua")]
-masas_agua = masas_agua + ["RedHidrograficaBasica","Cuencas","CuencasTotales"]
+#masas_agua = [c for c in lista_de_capas if c.startswith("MasasAgua")]
+masas_agua = ["MasasAguaLagos","MasasAguaPuertos","CuencasTotales","MasasAguaTransicion","MasasAguaCosteras"]
 
 
 #cargamos la primera capa masas de agua
 gdf_masas=gpd.read_file(st.session_state.rutaGDB,layer=masas_agua[0]) #el primer elemento de la lista es el 0, el segundo el 1, etc
 
-#cargamos todas las capas de zonas protegidas
+#cargamos todas las capas de masas de agua
 for masa in masas_agua[1:]: #empieza en 1 (se salta el primer elemento)
     gdfnew = gpd.read_file(st.session_state.rutaGDB,layer=masa)
     gdf_masas = pd.concat([gdf_masas,gdfnew],ignore_index=True,join="inner",axis=0)
@@ -74,14 +77,22 @@ if capa:
         if st.button("Ejecutar Consulta"):
             st.dataframe(gdf_masas_solapadas.drop(columns=["geometry"],inplace=False))
         
-        if st.button("Ver en mapa"):
-            fig=plt.figure()
-            ax=fig.add_subplot(111)
-            gdf_masas_solapadas.plot(column="COD_MASA",ax=ax,cmap="Blues",label="Masas de agua",legend=True)
-            leg1=ax.get_legend()
-            gdf_zona.plot(column="EUZPROTCOD",ax=ax,cmap="autumn",label="Zona protegida "+str(capa)+" "+EUZPROTCOD,legend=True,  legend_kwds={'loc': 'upper left'})
-            #ax.legend(loc="upper center")
-            #ctx.add_basemap(ax=ax, crs=gdf_zona.crs, source= ctx.providers.OpenStreetMap.DE.url)
-            ax.add_artist(leg1)
-            st.pyplot(fig,clear_figure=False)
+            #elif st.button("Ver en mapa"):
+            gdf_zona=cambiar_crs(gdf_zona)
+            gdf_masas_solapadas=cambiar_crs(gdf_masas_solapadas)
+            polygon_layer_zona = geometria_to_pydeck(gdf_zona)
+            polygon_layer_masa= geometria_to_pydeck(gdf_masas_solapadas)
+            mapa_pydeck([polygon_layer_masa,polygon_layer_zona])
+            
+
+            
+            # fig=plt.figure()
+            # ax=fig.add_subplot(111)
+            # gdf_masas_solapadas.plot(column="COD_MASA",ax=ax,cmap="Blues",label="Masas de agua",legend=True)
+            # leg1=ax.get_legend()
+            # gdf_zona.plot(column="EUZPROTCOD",ax=ax,cmap="autumn",label="Zona protegida "+str(capa)+" "+EUZPROTCOD,legend=True,  legend_kwds={'loc': 'upper left'})
+            # #ax.legend(loc="upper center")
+            # #ctx.add_basemap(ax=ax, crs=gdf_zona.crs, source= ctx.providers.OpenStreetMap.DE.url)
+            # ax.add_artist(leg1)
+            # st.pyplot(fig,clear_figure=False)
             

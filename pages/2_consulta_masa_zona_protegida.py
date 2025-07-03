@@ -20,6 +20,9 @@ from shapely.geometry import mapping
 import matplotlib.pyplot as plt
 #import contextily as ctx
 
+from mis_funciones import geometria_to_pydeck
+from mis_funciones import mapa_pydeck
+from mis_funciones import cambiar_crs
 
 #st.set_page_config(page_title="Consulta Masa de agua -> Zona Protegida")
 st.markdown("Consulta Masa de agua -> Zona Protegida")
@@ -82,14 +85,19 @@ if capa:
         if st.button("Ejecutar Consulta"):
             st.dataframe(gdf_zonas_solapadas.drop(columns=["geometry"],inplace=False))
         
-        if st.button("Ver en mapa"):
-            fig=plt.figure()
-            ax=fig.add_subplot(111)
-            gdf_zonas_solapadas.plot(column="EUZPROTCOD",ax=ax,cmap="Blues",label="Zonas protegidas",legend=True)
-            leg1=ax.get_legend()
-            gdf_masa.plot(column="COD_MASA",ax=ax,cmap="autumn",label="Masa de agua "+str(capa)+" "+codigo_masa,legend=True,  legend_kwds={'loc': 'upper left'})
-            #ax.legend(loc="upper center")
-            #ctx.add_basemap(ax=ax, crs=gdf_zona.crs, source= ctx.providers.OpenStreetMap.DE.url)
-            ax.add_artist(leg1)
-            st.pyplot(fig,clear_figure=False)
+            gdf_masa=cambiar_crs(gdf_masa)
+            gdf_zonas_solapadas=cambiar_crs(gdf_zonas_solapadas)
+            polygon_layer_masa = geometria_to_pydeck(gdf_masa)
+            polygon_layer_zona= geometria_to_pydeck(gdf_zonas_solapadas)
+            mapa_pydeck([polygon_layer_masa,polygon_layer_zona])
+            
+            # fig=plt.figure()
+            # ax=fig.add_subplot(111)
+            # gdf_zonas_solapadas.plot(column="EUZPROTCOD",ax=ax,cmap="Blues",label="Zonas protegidas",legend=True)
+            # leg1=ax.get_legend()
+            # gdf_masa.plot(column="COD_MASA",ax=ax,cmap="autumn",label="Masa de agua "+str(capa)+" "+codigo_masa,legend=True,  legend_kwds={'loc': 'upper left'})
+            # #ax.legend(loc="upper center")
+            # #ctx.add_basemap(ax=ax, crs=gdf_zona.crs, source= ctx.providers.OpenStreetMap.DE.url)
+            # ax.add_artist(leg1)
+            # st.pyplot(fig,clear_figure=False)
             
