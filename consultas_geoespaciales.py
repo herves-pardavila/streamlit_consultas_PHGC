@@ -30,7 +30,7 @@ right_column.image("logo-augas-de-galicia.png")
 # -------- CONFIGURACIÓN DE LA PÁGINA --------
 
 
-st.title("Consultas Geoespaciales")
+st.title("Visor de capas")
 st.sidebar.success("Seleciona tipo de consulta.")
 
 # -------- ENTRADA: RUTA A LA GDB --------
