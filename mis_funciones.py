@@ -159,7 +159,7 @@ def mapa_pydeck(list_of_layers):
     deck = pdk.Deck(
         layers=list_of_layers,
         initial_view_state=view_state,
-        map_style="mapbox://styles/mapbox/light-v9"
+        #map_style="mapbox://styles/mapbox/light-v9"
     )
 
     st.pydeck_chart(deck)
