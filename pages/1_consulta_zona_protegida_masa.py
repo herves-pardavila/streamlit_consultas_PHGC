@@ -24,7 +24,7 @@ from mis_funciones import interseccion_capas
 
 
 
-st.title("Consulta Zona Protegida -> Masa de agua")
+st.set_page_config(page_title="Consulta Zona Protegida -> Masa de agua")
 st.markdown("Consulta Zona Protegida -> Masa de agua")
 st.sidebar.header("Consulta Zona Protegida -> Masa de agua")
 #listamos todas las capas que tiene el gdb 
