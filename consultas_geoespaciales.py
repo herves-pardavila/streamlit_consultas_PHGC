@@ -44,6 +44,7 @@ st.session_state.rutaGDB=ruta_gdb
 
 
 gdf=carga_datos(st.session_state.rutaGDB)
+
 polygon_layer = geometria_to_pydeck(gdf)
 mapa_pydeck([polygon_layer])
 

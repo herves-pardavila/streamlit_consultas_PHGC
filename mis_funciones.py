@@ -19,7 +19,16 @@ def cambiar_crs(gdf):
         gdf = gdf.to_crs(epsg=4326)
     return gdf
     
-
+def read_gdf_capa(ruta,capa):
+    
+    gdf = gpd.read_file(ruta,layer=capa)
+   
+    gdf["info"] = gdf.apply(
+        lambda row: "\n".join([f"{col}: {row[col]}" for col in gdf.columns if col != gdf.geometry.name]),
+        axis=1
+    )
+    return gdf
+    
 def carga_datos(ruta):
    
     capas = list(gpd.list_layers(ruta)["name"])
@@ -27,7 +36,7 @@ def carga_datos(ruta):
     if capas:
         capa_sel = st.selectbox("Selecciona una capa", capas)
         try:
-            gdf = gpd.read_file(ruta, layer=capa_sel)
+            gdf = read_gdf_capa(ruta, capa_sel)
         except Exception as e:
             st.error(f"Error al cargar la capa: {e}")
         else:
@@ -37,7 +46,6 @@ def carga_datos(ruta):
                 st.success(f"{len(gdf)} elementos cargados")
 
                
-                gdf=cambiar_crs(gdf)
                 gdf = gdf[gdf.geometry.notnull()]
                
                 
@@ -51,26 +59,34 @@ def carga_datos(ruta):
 
 
 
-def geometria_to_pydeck(gdf):
+def geometria_to_pydeck(gdf,color=None):
     
+    global colors
+    colors={"red":[255,0,0,100],"blue":[0,0,255,100],"verde":[0,255,0,100],"amarillo":[255,255,0,100],"purple":[120,0,120,100]}
+    
+    gdf=cambiar_crs(gdf)
     geometry_type=gdf.geometry.geom_type.unique()[0]
     
     data=[]
     
-    
-    
+
     if geometry_type == "Polygon":
         #type_of_layer="PolygonLayer"
         
         for _, row in gdf.iterrows():
             geom=row.geometry
             coords=list(mapping(geom)["coordinates"])
-            data.append({"coordinates":coords[0]})
+            data.append({"coordinates":coords[0], "info":row["info"]})
+            
+        if color != None:
+            fill_color=colors[color]
+        else:
+            fill_color=[0, 100, 255, 100]
         layer=pdk.Layer(
             "PolygonLayer",
             data=pd.DataFrame(data),
             get_polygon="coordinates",
-            get_fill_color=[0, 100, 255, 100],
+            get_fill_color=fill_color,
             get_line_color=[0, 0, 0],
             line_width_min_pixels=1,
             pickable=True,)
@@ -81,13 +97,17 @@ def geometria_to_pydeck(gdf):
             geom=row.geometry
             for part in geom.geoms:
                 coords = list(mapping(part)["coordinates"])
-                data.append({"coordinates": coords[0]})  # solo anillo exterior
+                data.append({"coordinates": coords[0], "info":row["info"]})  # solo anillo exterior
+        if color != None:
+            fill_color=colors[color]
+        else:
+            fill_color=[0, 100, 255, 100]
                 
         layer=pdk.Layer(
             "PolygonLayer",
             data=pd.DataFrame(data),
             get_polygon="coordinates",
-            get_fill_color=[0, 100, 255, 100],
+            get_fill_color=fill_color,
             get_line_color=[0, 0, 0],
             line_width_min_pixels=1,
             pickable=True,)
@@ -95,13 +115,18 @@ def geometria_to_pydeck(gdf):
         for _,row in gdf.iterrows():
             geom=row.geometry
             coords=list(mapping(geom)["coordinates"])
-            data.append({"coordinates":coords})
-            
+            data.append({"coordinates":coords, "info":row["info"]})
+        
+        if color != None:
+            fill_color=colors[color]
+        else:
+            fill_color=[255, 0, 0]
+        
         layer=pdk.Layer(
             "PathLayer",
             data=pd.DataFrame(data),
             get_path="coordinates",
-            get_color=[255, 0, 0],
+            get_color=fill_color,
             get_width=50,
             lineWidthUnits="pixels",
             pickable=True,
@@ -113,13 +138,18 @@ def geometria_to_pydeck(gdf):
             geom=row.geometry
             for part in geom.geoms:
                 coords=list(mapping(part)["coordinates"])
-                data.append({"coordinates":coords})
-            
+                data.append({"coordinates":coords,"info":row["info"]})
+        
+        if color != None:
+            fill_color=colors[color]
+        else:
+            fill_color=[255, 0, 0]    
+        
         layer=pdk.Layer(
             "PathLayer",
             data=pd.DataFrame(data),
             get_path="coordinates",
-            get_color=[255, 0, 0],
+            get_color=fill_color,
             get_width=50,
             lineWidthUnits="pixels",
             pickable=True,
@@ -130,13 +160,18 @@ def geometria_to_pydeck(gdf):
         for _,row in gdf.iterrows():
             geom=row.geometry
             coords=list(mapping(geom)["coordinates"])
-            data.append({"coordinates":coords})
+            data.append({"coordinates":coords,"info":row["info"]})
         
+        
+        if color != None:
+            fill_color=colors[color]
+        else:
+            fill_color=[0, 200, 0]
         layer = pdk.Layer(
             "ScatterplotLayer",
             data=pd.DataFrame(data),
             get_position="coordinates",
-            get_color=[0, 200, 0],
+            get_color=fill_color,
             get_radius=1000,  # Ajusta el radio
             radUnits="pixels",
             pickable=True,
@@ -159,6 +194,7 @@ def mapa_pydeck(list_of_layers):
     deck = pdk.Deck(
         layers=list_of_layers,
         initial_view_state=view_state,
+        tooltip={"text": "{info}"},
         map_style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
     )
 
@@ -166,6 +202,28 @@ def mapa_pydeck(list_of_layers):
     
     return
 
+def interseccion_capas(capa_central, capa_periferica):
+    
+    #filtro los elementos de la capa periferica que intersecan a mi capa central
+    gdf_perifericas_solapadas = capa_periferica[capa_periferica.geometry.apply(lambda x: x.intersects(capa_central.geometry.iloc[0]))]
+    
+    #calculo las areas de la capa periferica que se intersecan con la central
+    gdf_interseccion=gdf_perifericas_solapadas.geometry.apply(lambda x: x.intersection(capa_central.geometry.iloc[0]))
+    
+    #me quedo, obviamente, con las zonas protegidas con un área de intersección > 0
+    areas_interseccion=gdf_interseccion.geometry.area[gdf_interseccion.geometry.area>0]
+    #areas_interseccion=gdf_interseccion.geometry.area[gdf_interseccion.geometry.area>0]
+    
+    #añado a la capa periférica, una nueva columna con las áreas de intersección
+    gdf_perifericas_solapadas.loc[areas_interseccion.index,"Area_interseccion_m2"]=areas_interseccion
+    
+    #añado nueva columna con el aire total
+    gdf_perifericas_solapadas["Area_total_m2"]=gdf_perifericas_solapadas.geometry.area
+    
+    #añado porcentaje
+    gdf_perifericas_solapadas["Porcentaje_area_(%)"]=(gdf_perifericas_solapadas.Area_interseccion_m2/gdf_perifericas_solapadas.Area_total_m2)*100
+    
+    return gdf_perifericas_solapadas
 
 
 
