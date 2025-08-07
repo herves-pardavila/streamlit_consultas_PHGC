@@ -179,8 +179,6 @@ def geometria_to_pydeck(gdf,color=None):
     
     return layer    
 
-
-
 def mapa_pydeck(list_of_layers):
     
     # Vista inicial centrada en los datos
