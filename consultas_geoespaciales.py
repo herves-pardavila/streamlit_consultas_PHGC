@@ -3,6 +3,11 @@
 Created on Mon Jun 30 16:19:23 2025
 
 @author: dherves
+
+Portada de la aplicación de streamlit. Carga los logos de Aquatica y Augas de 
+Galicia y te permite seleccionar una capa de la gdb para que la representes
+en un mapa
+
 """
 
 import streamlit as st
@@ -15,11 +20,6 @@ import base64
 from mis_funciones import carga_datos
 from mis_funciones import geometria_to_pydeck
 from mis_funciones import mapa_pydeck
-
-# -------- FUNCIÓN PARA LISTAR CAPAS EN UNA GDB --------
-
-
-# -------- FUNCIÓN PARA CONVERTIR GEOMETRÍA A pydeck --------
 
 
 st.set_page_config(page_title="Consultas geoespacialessss")

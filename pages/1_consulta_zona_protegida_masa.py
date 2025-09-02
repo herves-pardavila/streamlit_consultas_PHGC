@@ -3,6 +3,11 @@
 Created on Mon Jun 30 17:42:18 2025
 
 @author: dherves
+
+
+Script para la aplicación de streamlit. Sirve para ver qué masas de agua se intersecan
+con una zona protegida seleccionada en un desplegable de la app streamlit
+
 """
 
 import streamlit as st
